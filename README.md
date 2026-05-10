@@ -68,7 +68,7 @@ APK скачивается из вкладки **Actions → последний 
 
 ## Производительность
 
-- `minSdk` 21, `targetSdk` 34
+- `minSdk` 24, `targetSdk` 35
 - ProGuard + R8 (shrink + minify) — минимизирован размер APK
 - `--split-per-abi` — APK на конкретное устройство ~25 МБ
 - Все списки на `ListView.builder`, виджеты с `const` где возможно

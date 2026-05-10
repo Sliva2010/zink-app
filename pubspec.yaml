@@ -69,7 +69,6 @@ flutter:
 
   assets:
     - assets/certificates/
-    - assets/data/
 
   fonts:
     - family: ZinkDisplay
