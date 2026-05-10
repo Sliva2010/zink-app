@@ -1,0 +1,202 @@
+import 'package:flutter/material.dart';
+
+import '../../../core/theme/zink_spacing.dart';
+import '../../../core/utils/date_utils.dart';
+import '../../../models/chat_message.dart';
+import '../../../widgets/zink_loader.dart';
+
+class MessageBubble extends StatelessWidget {
+  const MessageBubble({
+    super.key,
+    required this.message,
+    required this.isStreaming,
+    this.onCopy,
+    this.onSpeak,
+    this.onSaveAsNote,
+  });
+
+  final ChatMessage message;
+  final bool isStreaming;
+  final VoidCallback? onCopy;
+  final VoidCallback? onSpeak;
+  final VoidCallback? onSaveAsNote;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isUser = message.role == ChatRole.user;
+    final scheme = theme.colorScheme;
+
+    final bubbleColor = isUser ? scheme.primary : scheme.surface;
+    final textColor = isUser ? scheme.onPrimary : scheme.onSurface;
+    final align = isUser ? MainAxisAlignment.end : MainAxisAlignment.start;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: ZinkSpacing.md),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: align,
+        children: [
+          if (!isUser) ...[
+            _AvatarMonogram(letter: 'Z', color: scheme.onSurface, fg: scheme.onPrimary),
+            const SizedBox(width: ZinkSpacing.sm),
+          ],
+          Flexible(
+            child: Column(
+              crossAxisAlignment:
+                  isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.sizeOf(context).width * 0.78,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: ZinkSpacing.md + 2,
+                    vertical: ZinkSpacing.sm + 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: bubbleColor,
+                    border: isUser
+                        ? null
+                        : Border.all(color: scheme.outline, width: 1),
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(ZinkSpacing.radiusLg),
+                      topRight: const Radius.circular(ZinkSpacing.radiusLg),
+                      bottomLeft: Radius.circular(
+                        isUser ? ZinkSpacing.radiusLg : ZinkSpacing.radiusXs,
+                      ),
+                      bottomRight: Radius.circular(
+                        isUser ? ZinkSpacing.radiusXs : ZinkSpacing.radiusLg,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (message.content.isEmpty && isStreaming)
+                        ZinkTypingDots(color: textColor)
+                      else
+                        SelectableText(
+                          message.content,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: textColor,
+                            height: 1.5,
+                          ),
+                        ),
+                      if (message.attachmentText != null &&
+                          message.attachmentText!.isNotEmpty &&
+                          isUser) ...[
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.all(ZinkSpacing.sm),
+                          decoration: BoxDecoration(
+                            color: scheme.onPrimary.withValues(alpha: 0.12),
+                            borderRadius:
+                                BorderRadius.circular(ZinkSpacing.radiusSm),
+                          ),
+                          child: Text(
+                            'Контекст: ${message.attachmentText!.length > 80 ? '${message.attachmentText!.substring(0, 80)}…' : message.attachmentText!}',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: textColor.withValues(alpha: 0.85),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        ZinkDates.humanTime(message.createdAt),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: scheme.onSurface.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      if (!isUser && message.content.isNotEmpty && !isStreaming) ...[
+                        const SizedBox(width: 8),
+                        _ActionBtn(
+                          icon: Icons.copy_rounded,
+                          onTap: onCopy,
+                          tooltip: 'Копировать',
+                        ),
+                        _ActionBtn(
+                          icon: Icons.volume_up_outlined,
+                          onTap: onSpeak,
+                          tooltip: 'Озвучить',
+                        ),
+                        if (onSaveAsNote != null)
+                          _ActionBtn(
+                            icon: Icons.bookmark_add_outlined,
+                            onTap: onSaveAsNote,
+                            tooltip: 'Сохранить как конспект',
+                          ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isUser) const SizedBox(width: ZinkSpacing.sm),
+        ],
+      ),
+    );
+  }
+}
+
+class _AvatarMonogram extends StatelessWidget {
+  const _AvatarMonogram({required this.letter, required this.color, required this.fg});
+
+  final String letter;
+  final Color color;
+  final Color fg;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(ZinkSpacing.radiusSm),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        letter,
+        style: TextStyle(
+          color: fg,
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
+          letterSpacing: 1.0,
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionBtn extends StatelessWidget {
+  const _ActionBtn({required this.icon, this.onTap, this.tooltip});
+
+  final IconData icon;
+  final VoidCallback? onTap;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip ?? '',
+      child: IconButton(
+        onPressed: onTap,
+        icon: Icon(icon, size: 14),
+        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.all(4),
+        constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+      ),
+    );
+  }
+}

@@ -1,0 +1,83 @@
+name: zink
+description: "ZINK - AI-репетитор на GigaChat. Чёрно-белый минимализм, премиум-опыт."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Routing
+  go_router: ^14.6.2
+
+  # Network
+  dio: ^5.7.0
+
+  # Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+  shared_preferences: ^2.3.4
+
+  # UI helpers
+  flutter_animate: ^4.5.2
+  flutter_svg: ^2.0.16
+  google_fonts: ^6.2.1
+
+  # Functional
+  uuid: ^4.5.1
+  intl: ^0.20.2
+  collection: ^1.18.0
+
+  # Voice / OCR
+  speech_to_text: ^7.0.0
+  flutter_tts: ^4.2.0
+  google_mlkit_text_recognition: ^0.15.0
+  image_picker: ^1.1.2
+
+  # PDF
+  pdf: ^3.11.1
+  printing: ^5.13.4
+  share_plus: ^10.1.2
+
+  # System
+  permission_handler: ^11.3.1
+  connectivity_plus: ^6.1.0
+  package_info_plus: ^8.1.1
+
+  # Charts (для аналитики/уровней)
+  fl_chart: ^0.69.2
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/certificates/
+    - assets/data/
+
+  fonts:
+    - family: ZinkDisplay
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
