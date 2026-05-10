@@ -21,8 +21,8 @@ android {
 
     defaultConfig {
         applicationId = "io.github.sliva2010.zink"
-        minSdk = flutter.minSdkVersion
-        targetSdk = 34
+        minSdk = 24
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
