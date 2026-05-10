@@ -6,8 +6,8 @@ plugins {
 
 android {
     namespace = "io.github.sliva2010.zink"
-    compileSdk = 34
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 36
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
