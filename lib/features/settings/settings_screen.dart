@@ -104,7 +104,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               value: inverse,
               onChanged: (_) =>
                   ref.read(inverseModeProvider.notifier).toggle(),
-              activeThumbColor: theme.colorScheme.primary,
+              activeColor: theme.colorScheme.primary,
               activeTrackColor:
                   theme.colorScheme.primary.withValues(alpha: 0.4),
             ),
@@ -121,7 +121,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     .put(SettingsKeys.hapticsEnabled, v);
                 setState(() {});
               },
-              activeThumbColor: theme.colorScheme.primary,
+              activeColor: theme.colorScheme.primary,
               activeTrackColor:
                   theme.colorScheme.primary.withValues(alpha: 0.4),
             ),
