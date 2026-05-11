@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,7 +6,6 @@ import '../../core/providers.dart';
 import '../../core/router/route_paths.dart';
 import '../../core/services/streak_service.dart';
 import '../../core/theme/zink_spacing.dart';
-import '../../core/utils/haptics.dart';
 import '../../models/user_profile.dart';
 import '../../widgets/zink_button.dart';
 import '../../widgets/zink_chip.dart';
@@ -65,7 +63,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     if (_page == 0 && _nameCtrl.text.trim().isEmpty) return;
     if (_page == 1 && (int.tryParse(_ageCtrl.text.trim()) ?? 0) < 5) return;
     if (_page < 4) {
-      ZinkHaptics.selection();
       _pageCtrl.nextPage(
         duration: const Duration(milliseconds: 320),
         curve: Curves.easeOutCubic,
@@ -78,7 +75,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   void _prev() {
     if (_page == 0) return;
-    ZinkHaptics.selection();
     _pageCtrl.previousPage(
       duration: const Duration(milliseconds: 280),
       curve: Curves.easeOutCubic,
@@ -385,10 +381,7 @@ class _GoalOption extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     return GestureDetector(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap();
-      },
+      onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(
@@ -490,10 +483,7 @@ class _ToneOption extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     return GestureDetector(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap();
-      },
+      onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(ZinkSpacing.lg),

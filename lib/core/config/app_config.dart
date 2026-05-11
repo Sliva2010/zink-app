@@ -46,7 +46,6 @@ class AppConfig {
   static const int xpPerQuestion = 8;
   static const int xpPerCardReview = 4;
   static const int xpPerQuizCorrect = 12;
-  static const int xpPerOcrScan = 15;
   static const int xpPerStreakDay = 20;
 
   /// Daily goal: вопросов в день базово

@@ -45,8 +45,8 @@ class AboutScreen extends StatelessWidget {
               '• GigaChat:Lite — ИИ-ядро\n'
               '• Flutter 3.x — UI и анимации\n'
               '• Hive — локальный оффлайн-кеш\n'
-              '• ML Kit — OCR сканер тетрадей\n'
               '• Speech-to-Text — голосовой ввод\n'
+              '• flutter_math_fork — рендеринг LaTeX\n'
               '• Минцифры РФ CA — SSL pinning',
               style: theme.textTheme.bodyMedium,
             ),

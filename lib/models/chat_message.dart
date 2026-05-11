@@ -19,7 +19,8 @@ class ChatMessage {
   final String content;
   final DateTime createdAt;
 
-  /// Доп. текстовая нагрузка: например, распознанный OCR-текст.
+  /// Доп. текстовая нагрузка (для обратной совместимости со старыми
+  /// сохранёнными сессиями — больше не используется в UI).
   final String? attachmentText;
 
   ChatMessage copyWith({String? content}) => ChatMessage(

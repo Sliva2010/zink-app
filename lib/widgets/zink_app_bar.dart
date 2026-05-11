@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/zink_spacing.dart';
-import '../core/utils/haptics.dart';
 
 /// AppBar в стиле ZINK: чистый, без теней, с тонкой нижней рамкой.
 class ZinkAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -57,10 +56,7 @@ class ZinkAppBar extends StatelessWidget implements PreferredSizeWidget {
                   else if (showBack && canPop)
                     IconButton(
                       icon: const Icon(Icons.arrow_back_rounded),
-                      onPressed: () {
-                        ZinkHaptics.light();
-                        Navigator.maybePop(context);
-                      },
+                      onPressed: () => Navigator.maybePop(context),
                     )
                   else
                     const SizedBox(width: ZinkSpacing.sm),

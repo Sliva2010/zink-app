@@ -51,7 +51,7 @@ final inverseModeProvider =
 class InverseModeNotifier extends StateNotifier<bool> {
   InverseModeNotifier()
       : super(StorageService.settings
-            .get(SettingsKeys.inverseMode, defaultValue: false) as bool);
+            .get(SettingsKeys.inverseMode, defaultValue: true) as bool);
 
   Future<void> toggle() async {
     state = !state;

@@ -5,7 +5,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/providers.dart';
 import '../../core/router/route_paths.dart';
-import '../../core/storage/settings_keys.dart';
 import '../../core/storage/storage_service.dart';
 import '../../core/theme/zink_spacing.dart';
 import '../../widgets/zink_app_bar.dart';
@@ -36,8 +35,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final theme = Theme.of(context);
     final profile = ref.watch(userProfileProvider);
     final inverse = ref.watch(inverseModeProvider);
-    final haptics = StorageService.settings
-        .get(SettingsKeys.hapticsEnabled, defaultValue: true) as bool;
 
     return ZinkScaffold(
       appBar: const ZinkAppBar(title: 'Профиль', showBack: false),
@@ -104,23 +101,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               value: inverse,
               onChanged: (_) =>
                   ref.read(inverseModeProvider.notifier).toggle(),
-              activeColor: theme.colorScheme.primary,
-              activeTrackColor:
-                  theme.colorScheme.primary.withValues(alpha: 0.4),
-            ),
-          ),
-          const SizedBox(height: ZinkSpacing.sm),
-          _SettingsTile(
-            icon: Icons.vibration_rounded,
-            title: 'Тактильная отдача',
-            subtitle: 'Лёгкая вибрация при нажатиях',
-            trailing: Switch(
-              value: haptics,
-              onChanged: (v) async {
-                await StorageService.settings
-                    .put(SettingsKeys.hapticsEnabled, v);
-                setState(() {});
-              },
               activeColor: theme.colorScheme.primary,
               activeTrackColor:
                   theme.colorScheme.primary.withValues(alpha: 0.4),

@@ -4,10 +4,6 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <!-- Камера для OCR сканера тетрадей -->
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-
     <!-- Микрофон для голосового ввода -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
@@ -26,20 +22,11 @@
         </intent>
     </queries>
 
-    <!-- Доступ к фото/файлам -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-
-    <!-- Вибрация для haptic feedback -->
-    <uses-permission android:name="android.permission.VIBRATE"/>
-
     <application
         android:label="ZINK"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:enableOnBackInvokedCallback="true"
-        android:requestLegacyExternalStorage="true">
+        android:enableOnBackInvokedCallback="true">
 
         <activity
             android:name=".MainActivity"
@@ -62,10 +49,5 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
-
-        <!-- ML Kit Text Recognition: подгрузить модель при установке -->
-        <meta-data
-            android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="ocr"/>
     </application>
 </manifest>

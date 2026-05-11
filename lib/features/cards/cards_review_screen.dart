@@ -8,7 +8,6 @@ import '../../core/services/gamification_service.dart';
 import '../../core/srs/sm2.dart';
 import '../../core/storage/storage_service.dart';
 import '../../core/theme/zink_spacing.dart';
-import '../../core/utils/haptics.dart';
 import '../../models/flash_card.dart';
 import '../../widgets/zink_app_bar.dart';
 import '../../widgets/zink_button.dart';
@@ -57,7 +56,6 @@ class _CardsReviewScreenState extends ConsumerState<CardsReviewScreen> {
     );
     ref.read(totalXpProvider.notifier).state = gain.newTotal;
 
-    ZinkHaptics.light();
     setState(() {
       _queue.removeAt(0);
       _doneCount++;

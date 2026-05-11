@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/services/pdf_service.dart';
 import '../../core/storage/storage_service.dart';
 import '../../core/theme/zink_spacing.dart';
-import '../../core/utils/haptics.dart';
 import '../../models/note.dart';
 import '../../widgets/zink_app_bar.dart';
 import '../../widgets/zink_loader.dart';
@@ -60,7 +59,6 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
     try {
       await _save();
       final file = await PdfService.exportNoteToPdf(_note!);
-      ZinkHaptics.medium();
       await PdfService.sharePdf(file);
     } catch (e) {
       if (!mounted) return;

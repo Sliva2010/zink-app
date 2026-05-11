@@ -67,22 +67,6 @@ class AchievementsCatalog {
       type: AchievementType.quizzesCompleted,
     ),
 
-    // OCR сканы
-    Achievement(
-      id: 'paper_to_pixels',
-      title: 'Из бумаги в пиксели',
-      description: 'Первое распознавание тетради',
-      threshold: 1,
-      type: AchievementType.scansCompleted,
-    ),
-    Achievement(
-      id: 'archive_master',
-      title: 'Архивариус',
-      description: '25 сканов завершено',
-      threshold: 25,
-      type: AchievementType.scansCompleted,
-    ),
-
     // Стрик
     Achievement(
       id: 'three_in_row',

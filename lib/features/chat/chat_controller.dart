@@ -68,14 +68,18 @@ class ChatController extends StateNotifier<ChatState> {
 Правила:
 - Отвечай только на русском, чисто и понятно.
 - Объясняй пошагово, начиная с простого. Используй короткие абзацы.
-- В формулах используй обычные символы (* / + - ^ =), без LaTeX.
+- Для математических и химических формул ВСЕГДА используй LaTeX:
+  - Инлайн: \$x^2 + 3x - 4\$, \$H_2O\$, \$\\frac{a}{b}\$, \$\\sqrt{2}\$.
+  - Отдельным блоком: \$\$E = mc^2\$\$, \$\$\\int_0^1 x\\,dx\$\$.
+  - Степени, индексы, дроби, корни, химические индексы — только через LaTeX.
+  - НЕ пиши формулы в виде "x^2" вне LaTeX; используй \$x^2\$.
 - Если вопрос пустой/непонятный — задай уточняющий вопрос.
 - В конце сложных ответов делай краткое резюме одной строкой.
 - Не используй эмодзи. Не используй смайлики. Не используй стикеры.
 ''';
   }
 
-  Future<void> sendMessage(String text, {String? attachmentText}) async {
+  Future<void> sendMessage(String text) async {
     if (state.streaming) return;
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
@@ -84,7 +88,6 @@ class ChatController extends StateNotifier<ChatState> {
     final userMsg = ChatMessage(
       role: ChatRole.user,
       content: trimmed,
-      attachmentText: attachmentText,
     );
     final placeholder = ChatMessage(role: ChatRole.assistant, content: '');
 
@@ -111,12 +114,11 @@ class ChatController extends StateNotifier<ChatState> {
 
     final messagesForApi = <Map<String, String>>[
       {'role': 'system', 'content': _buildSystemPrompt(profile)},
-      for (final m in updatedMessages.where((m) => m.role != ChatRole.assistant || m.content.isNotEmpty))
+      for (final m in updatedMessages
+          .where((m) => m.role != ChatRole.assistant || m.content.isNotEmpty))
         {
           'role': _roleString(m.role),
-          'content': m.attachmentText != null && m.attachmentText!.isNotEmpty
-              ? '${m.content}\n\nКонтекст из тетради:\n${m.attachmentText}'
-              : m.content,
+          'content': m.content,
         },
     ];
 

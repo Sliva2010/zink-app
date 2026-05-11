@@ -12,7 +12,6 @@ import '../../features/home/home_shell.dart';
 import '../../features/mindmap/mindmap_screen.dart';
 import '../../features/notes/note_detail_screen.dart';
 import '../../features/notes/notes_screen.dart';
-import '../../features/ocr/ocr_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/quiz/quiz_setup_screen.dart';
 import '../../features/settings/about_screen.dart';
@@ -110,11 +109,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.mindmap,
         pageBuilder: (context, state) =>
             ZinkPageTransition.fadeUp(const MindMapScreen()),
-      ),
-      GoRoute(
-        path: RoutePaths.ocr,
-        pageBuilder: (context, state) =>
-            ZinkPageTransition.fadeUp(const OcrScreen()),
       ),
       GoRoute(
         path: RoutePaths.about,

@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/route_paths.dart';
 import '../../core/services/tts_service.dart';
 import '../../core/theme/zink_spacing.dart';
-import '../../core/utils/haptics.dart';
 import '../../models/chat_message.dart';
 import '../../models/note.dart';
 import '../../core/storage/storage_service.dart';
@@ -52,7 +51,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
     await StorageService.notes.put(note.id, note.toJson());
     if (!context.mounted) return;
-    ZinkHaptics.medium();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Сохранено в конспекты')),
     );
@@ -87,10 +85,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           IconButton(
             tooltip: 'Новый диалог',
             icon: const Icon(Icons.add_comment_outlined),
-            onPressed: () {
-              ZinkHaptics.medium();
-              ctrl.newSession();
-            },
+            onPressed: ctrl.newSession,
           ),
         ],
       ),
@@ -122,9 +117,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         return MessageBubble(
                           message: m,
                           isStreaming: isStreaming,
+                          waiting: isStreaming &&
+                              m.role == ChatRole.assistant &&
+                              m.content.isEmpty,
                           onCopy: () {
                             Clipboard.setData(ClipboardData(text: m.content));
-                            ZinkHaptics.light();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Скопировано')),
                             );
@@ -139,7 +136,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             ChatComposer(
               streaming: state.streaming,
-              onSend: (text, ocrText) => ctrl.sendMessage(text, attachmentText: ocrText),
+              onSend: ctrl.sendMessage,
             ),
           ],
         ),
@@ -157,7 +154,7 @@ class _EmptyState extends StatelessWidget {
     final examples = [
       'Объясни теорему Пифагора простыми словами',
       'Расскажи о Великой Отечественной войне',
-      'Помоги решить уравнение 2x² - 4x + 1 = 0',
+      r'Помоги решить уравнение $2x^2 - 4x + 1 = 0$',
       'Что такое генетика? Кратко',
       'Сравни клетки растений и животных',
     ];

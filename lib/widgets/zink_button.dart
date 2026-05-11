@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/zink_spacing.dart';
-import '../core/utils/haptics.dart';
 
 enum ZinkButtonVariant { solid, outline, ghost }
 enum ZinkButtonSize { sm, md, lg }
@@ -9,7 +8,6 @@ enum ZinkButtonSize { sm, md, lg }
 /// Универсальная кнопка ZINK.
 ///
 /// Дизайн: строгая прямоугольная форма с лёгким скруглением, без теней.
-/// Использует haptics на каждом нажатии.
 class ZinkButton extends StatefulWidget {
   const ZinkButton({
     super.key,
@@ -95,12 +93,7 @@ class _ZinkButtonState extends State<ZinkButton> {
       onTapDown: disabled ? null : (_) => setState(() => _pressed = true),
       onTapUp: disabled ? null : (_) => setState(() => _pressed = false),
       onTapCancel: disabled ? null : () => setState(() => _pressed = false),
-      onTap: disabled
-          ? null
-          : () async {
-              await ZinkHaptics.light();
-              widget.onPressed?.call();
-            },
+      onTap: disabled ? null : () => widget.onPressed?.call(),
       child: AnimatedScale(
         scale: _pressed ? 0.97 : 1.0,
         duration: const Duration(milliseconds: 110),

@@ -5,7 +5,6 @@ class SettingsKeys {
   static const String onboardingCompleted = 'onboarding_completed';
   static const String inverseMode = 'inverse_mode'; // true == тёмный
   static const String fontScale = 'font_scale';
-  static const String hapticsEnabled = 'haptics_enabled';
   static const String soundsEnabled = 'sounds_enabled';
   static const String voiceName = 'tts_voice';
   static const String streakLastDay = 'streak_last_day';

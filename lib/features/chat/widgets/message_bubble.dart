@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/zink_spacing.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../models/chat_message.dart';
-import '../../../widgets/zink_loader.dart';
+import '../../../widgets/math_text.dart';
+import '../../../widgets/thinking_status.dart';
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
     super.key,
     required this.message,
     required this.isStreaming,
+    this.waiting = false,
     this.onCopy,
     this.onSpeak,
     this.onSaveAsNote,
@@ -17,6 +19,7 @@ class MessageBubble extends StatelessWidget {
 
   final ChatMessage message;
   final bool isStreaming;
+  final bool waiting;
   final VoidCallback? onCopy;
   final VoidCallback? onSpeak;
   final VoidCallback? onSaveAsNote;
@@ -70,40 +73,15 @@ class MessageBubble extends StatelessWidget {
                       ),
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (message.content.isEmpty && isStreaming)
-                        ZinkTypingDots(color: textColor)
-                      else
-                        SelectableText(
-                          message.content,
+                  child: waiting
+                      ? ThinkingStatus(color: textColor)
+                      : MathText(
+                          text: message.content,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: textColor,
                             height: 1.5,
                           ),
                         ),
-                      if (message.attachmentText != null &&
-                          message.attachmentText!.isNotEmpty &&
-                          isUser) ...[
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.all(ZinkSpacing.sm),
-                          decoration: BoxDecoration(
-                            color: scheme.onPrimary.withValues(alpha: 0.12),
-                            borderRadius:
-                                BorderRadius.circular(ZinkSpacing.radiusSm),
-                          ),
-                          child: Text(
-                            'Контекст: ${message.attachmentText!.length > 80 ? '${message.attachmentText!.substring(0, 80)}…' : message.attachmentText!}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: textColor.withValues(alpha: 0.85),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
                 ),
                 const SizedBox(height: 4),
                 Padding(

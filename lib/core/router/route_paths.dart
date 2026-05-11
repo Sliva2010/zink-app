@@ -13,7 +13,6 @@ class RoutePaths {
   static const String quiz = '/quiz';
   static const String quizPlay = '/quiz/play';
   static const String mindmap = '/mindmap';
-  static const String ocr = '/ocr';
   static const String achievements = '/achievements';
   static const String settings = '/settings';
   static const String about = '/about';

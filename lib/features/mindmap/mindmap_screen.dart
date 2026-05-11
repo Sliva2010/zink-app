@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/providers.dart';
+import '../../core/router/route_paths.dart';
 import '../../core/theme/zink_spacing.dart';
 import '../../models/mind_map.dart';
 import '../../widgets/zink_app_bar.dart';
@@ -84,7 +86,16 @@ class _MindMapScreenState extends ConsumerState<MindMapScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ZinkScaffold(
-      appBar: const ZinkAppBar(title: 'Mind Map'),
+      appBar: ZinkAppBar(
+        title: 'Mind Map',
+        leading: IconButton(
+          tooltip: 'Назад',
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.canPop(context)
+              ? Navigator.pop(context)
+              : context.go(RoutePaths.home),
+        ),
+      ),
       body: Column(
         children: [
           Padding(

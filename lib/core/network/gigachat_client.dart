@@ -29,6 +29,30 @@ class GigaChatClient {
   DateTime? _expiresAt;
   Completer<String>? _refreshCompleter;
 
+  /// API GigaChat ограничен 1 одновременным потоком. Все запросы
+  /// (`completion` и `streamCompletion`) выстраиваются в очередь через
+  /// этот «мьютекс» — следующий стартует только после завершения текущего.
+  Future<void>? _apiLock;
+
+  Future<void> _acquireLock() async {
+    while (_apiLock != null) {
+      try {
+        await _apiLock;
+      } catch (_) {
+        // предыдущий запрос упал — нам это не важно, идём дальше
+      }
+    }
+  }
+
+  void _setLock(Completer<void> c) {
+    _apiLock = c.future;
+  }
+
+  void _releaseLock(Completer<void> c) {
+    if (!c.isCompleted) c.complete();
+    _apiLock = null;
+  }
+
   static Future<GigaChatClient> create() async {
     final httpClient = await MintsifryTrust.buildHttpClient();
 
@@ -134,10 +158,34 @@ class GigaChatClient {
   }
 
   /// Не-стримовый чат-комплишн.
+  ///
+  /// Выполняется через очередь: если уже идёт другой запрос — ждём его
+  /// завершения и стартуем следующий.
   Future<String> completion({
     required List<Map<String, String>> messages,
     double temperature = 0.7,
     int maxTokens = 1024,
+    String? model,
+  }) async {
+    await _acquireLock();
+    final lock = Completer<void>();
+    _setLock(lock);
+    try {
+      return await _doCompletion(
+        messages: messages,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        model: model,
+      );
+    } finally {
+      _releaseLock(lock);
+    }
+  }
+
+  Future<String> _doCompletion({
+    required List<Map<String, String>> messages,
+    required double temperature,
+    required int maxTokens,
     String? model,
   }) async {
     Future<Response<Map<String, dynamic>>> doCall(String token) {
@@ -199,10 +247,35 @@ class GigaChatClient {
   }
 
   /// SSE стрим чат-комплишна. Возвращает [Stream] кусочков текста.
+  ///
+  /// Тоже выстраивается в общую очередь — пока активен другой запрос,
+  /// этот стрим ничего не отдаёт, а его клиент видит «ожидающее»
+  /// состояние (например, анимация статусов в чате).
   Stream<String> streamCompletion({
     required List<Map<String, String>> messages,
     double temperature = 0.7,
     int maxTokens = 1024,
+    String? model,
+  }) async* {
+    await _acquireLock();
+    final lock = Completer<void>();
+    _setLock(lock);
+    try {
+      yield* _doStreamCompletion(
+        messages: messages,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        model: model,
+      );
+    } finally {
+      _releaseLock(lock);
+    }
+  }
+
+  Stream<String> _doStreamCompletion({
+    required List<Map<String, String>> messages,
+    required double temperature,
+    required int maxTokens,
     String? model,
   }) async* {
     final token = await ensureAccessToken();

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/router/route_paths.dart';
 import '../../core/theme/zink_spacing.dart';
-import '../../core/utils/haptics.dart';
 
 class HomeShell extends ConsumerWidget {
   const HomeShell({super.key, required this.child, required this.location});
@@ -34,40 +33,28 @@ class HomeShell extends ConsumerWidget {
                   iconActive: Icons.home_rounded,
                   label: 'Главная',
                   active: index == 0,
-                  onTap: () {
-                    ZinkHaptics.selection();
-                    context.go(RoutePaths.home);
-                  },
+                  onTap: () => context.go(RoutePaths.home),
                 ),
                 _TabItem(
                   icon: Icons.menu_book_outlined,
                   iconActive: Icons.menu_book_rounded,
                   label: 'Знания',
                   active: index == 1,
-                  onTap: () {
-                    ZinkHaptics.selection();
-                    context.go(RoutePaths.notes);
-                  },
+                  onTap: () => context.go(RoutePaths.notes),
                 ),
                 _TabItem(
                   icon: Icons.bar_chart_outlined,
                   iconActive: Icons.bar_chart_rounded,
                   label: 'Прогресс',
                   active: index == 2,
-                  onTap: () {
-                    ZinkHaptics.selection();
-                    context.go(RoutePaths.achievements);
-                  },
+                  onTap: () => context.go(RoutePaths.achievements),
                 ),
                 _TabItem(
                   icon: Icons.person_outline_rounded,
                   iconActive: Icons.person_rounded,
                   label: 'Профиль',
                   active: index == 3,
-                  onTap: () {
-                    ZinkHaptics.selection();
-                    context.go(RoutePaths.settings);
-                  },
+                  onTap: () => context.go(RoutePaths.settings),
                 ),
               ],
             ),

@@ -7,7 +7,6 @@ import '../../core/providers.dart';
 import '../../core/services/gamification_service.dart';
 import '../../core/storage/storage_service.dart';
 import '../../core/theme/zink_spacing.dart';
-import '../../core/utils/haptics.dart';
 import '../../models/quiz.dart';
 import '../../widgets/zink_app_bar.dart';
 import '../../widgets/zink_button.dart';
@@ -46,9 +45,6 @@ class _QuizPlayScreenState extends ConsumerState<QuizPlayScreen> {
         AppConfig.xpPerQuizCorrect,
       );
       ref.read(totalXpProvider.notifier).state = gain.newTotal;
-      ZinkHaptics.medium();
-    } else {
-      ZinkHaptics.light();
     }
     setState(() => _revealed = true);
   }
@@ -135,10 +131,7 @@ class _QuizPlayScreenState extends ConsumerState<QuizPlayScreen> {
                 child: GestureDetector(
                   onTap: _revealed
                       ? null
-                      : () {
-                          ZinkHaptics.selection();
-                          setState(() => _selected = i);
-                        },
+                      : () => setState(() => _selected = i),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 160),
                     padding: const EdgeInsets.symmetric(

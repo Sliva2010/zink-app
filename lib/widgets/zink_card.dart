@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/zink_spacing.dart';
-import '../core/utils/haptics.dart';
 
 class ZinkCard extends StatelessWidget {
   const ZinkCard({
@@ -33,12 +32,7 @@ class ZinkCard extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: onTap == null
-            ? null
-            : () {
-                ZinkHaptics.light();
-                onTap?.call();
-              },
+        onTap: onTap,
         borderRadius: BorderRadius.circular(ZinkSpacing.radiusLg),
         splashColor: theme.colorScheme.onSurface.withValues(alpha: 0.04),
         highlightColor: theme.colorScheme.onSurface.withValues(alpha: 0.02),

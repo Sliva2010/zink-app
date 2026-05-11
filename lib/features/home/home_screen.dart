@@ -120,10 +120,10 @@ class HomeScreen extends ConsumerWidget {
                     onTap: () => context.go(RoutePaths.chat),
                   ),
                   QuickAction(
-                    icon: Icons.document_scanner_outlined,
-                    title: 'Сканировать',
-                    subtitle: 'OCR тетради',
-                    onTap: () => context.go(RoutePaths.ocr),
+                    icon: Icons.menu_book_outlined,
+                    title: 'Конспекты',
+                    subtitle: 'Мои заметки',
+                    onTap: () => context.go(RoutePaths.notes),
                   ),
                   QuickAction(
                     icon: Icons.style_outlined,
@@ -216,7 +216,7 @@ class HomeScreen extends ConsumerWidget {
     final tips = [
       'Объясняй сложные темы своими словами — это закрепляет знания',
       'Повторяй за 5 минут до сна — память работает на ура',
-      'Сканируй конспекты и задавай вопросы по ним прямо в ZINK',
+      'Не понял тему? Спроси ZINK тремя разными способами — найдёшь свой',
       'Сложности с темой? Создай Mind Map и увидь структуру целиком',
       'Карточки SRS экономят 80% времени на повторении',
     ];
