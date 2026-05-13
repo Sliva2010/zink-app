@@ -160,15 +160,15 @@ class MathText extends StatelessWidget {
     // Убираем заголовки ### ## #
     s = s.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
     // Убираем **bold** и __bold__
-    s = s.replaceAll(RegExp(r'\*\*(.+?)\*\*'), r'$1');
-    s = s.replaceAll(RegExp(r'__(.+?)__'), r'$1');
+    s = s.replaceAllMapped(RegExp(r'\*\*(.+?)\*\*', dotAll: true), (m) => m.group(1) ?? '');
+    s = s.replaceAllMapped(RegExp(r'__(.+?)__', dotAll: true), (m) => m.group(1) ?? '');
     // Убираем *italic* и _italic_
-    s = s.replaceAll(RegExp(r'\*(.+?)\*'), r'$1');
-    s = s.replaceAll(RegExp(r'_(.+?)_'), r'$1');
+    s = s.replaceAllMapped(RegExp(r'\*(.+?)\*', dotAll: true), (m) => m.group(1) ?? '');
+    s = s.replaceAllMapped(RegExp(r'_(.+?)_', dotAll: true), (m) => m.group(1) ?? '');
     // Убираем ~~strikethrough~~
-    s = s.replaceAll(RegExp(r'~~(.+?)~~'), r'$1');
+    s = s.replaceAllMapped(RegExp(r'~~(.+?)~~', dotAll: true), (m) => m.group(1) ?? '');
     // Убираем `code`
-    s = s.replaceAll(RegExp(r'`(.+?)`'), r'$1');
+    s = s.replaceAllMapped(RegExp(r'`(.+?)`', dotAll: true), (m) => m.group(1) ?? '');
     // Убираем > цитаты
     s = s.replaceAll(RegExp(r'^>\s?', multiLine: true), '');
     // Убираем горизонтальные линии --- или ***

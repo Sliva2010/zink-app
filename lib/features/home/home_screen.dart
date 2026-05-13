@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../core/animations/zink_animations.dart';
 import '../../core/gamification/level_system.dart';
@@ -157,7 +156,8 @@ class HomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: ZinkSpacing.md),
             ],
-            Text('Быстрые действия', style: theme.textTheme.titleLarge),            const SizedBox(height: ZinkSpacing.md),
+            Text('Быстрые действия', style: theme.textTheme.titleLarge),
+            const SizedBox(height: ZinkSpacing.md),
 
             ZinkEntrance(
               delay: const Duration(milliseconds: 180),

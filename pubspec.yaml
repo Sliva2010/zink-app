@@ -48,8 +48,8 @@ dependencies:
   printing: ^5.13.4
   share_plus: ^10.1.2
 
-  # OCR
-  google_mlkit_text_recognition: ^0.13.0
+  # OCR (зарезервировано, не используется в текущей версии)
+  # google_mlkit_text_recognition: ^0.13.0
 
   # System
   permission_handler: ^11.3.1
