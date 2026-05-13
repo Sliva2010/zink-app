@@ -44,7 +44,7 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _pageCtrl = PageController();
   final _nameCtrl = TextEditingController();
-  final _ageCtrl = TextEditingController(text: '14');
+  final _ageCtrl = TextEditingController(); // пустое поле возраста
 
   int _page = 0;
   final Set<String> _selectedSubjects = {};
@@ -62,6 +62,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void _next() {
     if (_page == 0 && _nameCtrl.text.trim().isEmpty) return;
     if (_page == 1 && (int.tryParse(_ageCtrl.text.trim()) ?? 0) < 5) return;
+    // Скрываем клавиатуру при переходе между шагами
+    FocusScope.of(context).unfocus();
     if (_page < 4) {
       _pageCtrl.nextPage(
         duration: const Duration(milliseconds: 320),
@@ -83,6 +85,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
+    FocusScope.of(context).unfocus();
     final profile = UserProfile(
       name: _nameCtrl.text.trim(),
       age: int.tryParse(_ageCtrl.text.trim()) ?? 14,

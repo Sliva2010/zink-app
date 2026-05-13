@@ -11,4 +11,5 @@ class SettingsKeys {
   static const String streakCurrent = 'streak_current';
   static const String streakBest = 'streak_best';
   static const String totalXp = 'total_xp';
+  static const String userAvatarPath = 'user_avatar_path';
 }

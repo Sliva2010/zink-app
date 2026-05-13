@@ -79,3 +79,24 @@ final onboardingDoneProvider = Provider<bool>((ref) {
   final profile = ref.watch(userProfileProvider);
   return profile != null;
 });
+
+/// Путь к аватарке пользователя (или null).
+final userAvatarPathProvider =
+    StateNotifierProvider<UserAvatarNotifier, String?>((ref) {
+  return UserAvatarNotifier();
+});
+
+class UserAvatarNotifier extends StateNotifier<String?> {
+  UserAvatarNotifier()
+      : super(StorageService.settings.get(SettingsKeys.userAvatarPath) as String?);
+
+  Future<void> set(String path) async {
+    await StorageService.settings.put(SettingsKeys.userAvatarPath, path);
+    state = path;
+  }
+
+  Future<void> clear() async {
+    await StorageService.settings.delete(SettingsKeys.userAvatarPath);
+    state = null;
+  }
+}

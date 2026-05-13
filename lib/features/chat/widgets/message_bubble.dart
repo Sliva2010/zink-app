@@ -1,12 +1,16 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/providers.dart';
 import '../../../core/theme/zink_spacing.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../models/chat_message.dart';
 import '../../../widgets/math_text.dart';
 import '../../../widgets/thinking_status.dart';
 
-class MessageBubble extends StatelessWidget {
+class MessageBubble extends ConsumerWidget {
   const MessageBubble({
     super.key,
     required this.message,
@@ -25,7 +29,7 @@ class MessageBubble extends StatelessWidget {
   final VoidCallback? onSaveAsNote;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isUser = message.role == ChatRole.user;
     final scheme = theme.colorScheme;
@@ -34,14 +38,20 @@ class MessageBubble extends StatelessWidget {
     final textColor = isUser ? scheme.onPrimary : scheme.onSurface;
     final align = isUser ? MainAxisAlignment.end : MainAxisAlignment.start;
 
+    // Аватарка пользователя
+    final avatarPath = ref.watch(userAvatarPathProvider);
+    final userName = ref.watch(userProfileProvider)?.name ?? '';
+    final userInitial = userName.isNotEmpty ? userName.characters.first.toUpperCase() : '?';
+
     return Padding(
       padding: const EdgeInsets.only(bottom: ZinkSpacing.md),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: align,
         children: [
+          // Аватар ZINK (слева для ответов ИИ)
           if (!isUser) ...[
-            _AvatarMonogram(letter: 'Z', color: scheme.onSurface, fg: scheme.onPrimary),
+            _ZinkAvatar(color: scheme.onSurface, fg: scheme.onPrimary),
             const SizedBox(width: ZinkSpacing.sm),
           ],
           Flexible(
@@ -120,17 +130,26 @@ class MessageBubble extends StatelessWidget {
               ],
             ),
           ),
-          if (isUser) const SizedBox(width: ZinkSpacing.sm),
+          // Аватарка пользователя (справа для сообщений юзера)
+          if (isUser) ...[
+            const SizedBox(width: ZinkSpacing.sm),
+            _UserAvatar(
+              avatarPath: avatarPath,
+              initial: userInitial,
+              color: scheme.primary,
+              fg: scheme.onPrimary,
+            ),
+          ],
         ],
       ),
     );
   }
 }
 
-class _AvatarMonogram extends StatelessWidget {
-  const _AvatarMonogram({required this.letter, required this.color, required this.fg});
+/// Аватар ZINK — буква Z в квадрате
+class _ZinkAvatar extends StatelessWidget {
+  const _ZinkAvatar({required this.color, required this.fg});
 
-  final String letter;
   final Color color;
   final Color fg;
 
@@ -145,7 +164,7 @@ class _AvatarMonogram extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: Text(
-        letter,
+        'Z',
         style: TextStyle(
           color: fg,
           fontWeight: FontWeight.w700,
@@ -153,6 +172,51 @@ class _AvatarMonogram extends StatelessWidget {
           letterSpacing: 1.0,
         ),
       ),
+    );
+  }
+}
+
+/// Аватарка пользователя — фото или инициал
+class _UserAvatar extends StatelessWidget {
+  const _UserAvatar({
+    required this.avatarPath,
+    required this.initial,
+    required this.color,
+    required this.fg,
+  });
+
+  final String? avatarPath;
+  final String initial;
+  final Color color;
+  final Color fg;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(ZinkSpacing.radiusSm),
+        image: avatarPath != null
+            ? DecorationImage(
+                image: FileImage(File(avatarPath!)),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: avatarPath == null
+          ? Text(
+              initial,
+              style: TextStyle(
+                color: fg,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                letterSpacing: 1.0,
+              ),
+            )
+          : null,
     );
   }
 }

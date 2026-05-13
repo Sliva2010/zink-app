@@ -43,6 +43,33 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Install Pillow for icon generation
+        run: pip3 install Pillow
+
+      - name: Generate launcher icons from avatarka.png
+        run: |
+          python3 - <<'PYEOF'
+          from PIL import Image
+          import os, shutil
+
+          src = "assets/avatarka.png"
+          sizes = {
+            "android/app/src/main/res/mipmap-mdpi/ic_launcher.png": 48,
+            "android/app/src/main/res/mipmap-hdpi/ic_launcher.png": 72,
+            "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": 96,
+            "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": 144,
+            "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": 192,
+          }
+          img = Image.open(src).convert("RGBA")
+          for path, size in sizes.items():
+            resized = img.resize((size, size), Image.LANCZOS)
+            # Сохраняем как RGB PNG (без альфа) — AAPT требует стандартный PNG
+            bg = Image.new("RGB", (size, size), (0, 0, 0))
+            bg.paste(resized, mask=resized.split()[3])
+            bg.save(path, "PNG")
+            print(f"Generated {path} ({size}x{size})")
+          PYEOF
+
       - name: Analyze (non-fatal)
         run: flutter analyze --no-fatal-warnings --no-fatal-infos || true
 

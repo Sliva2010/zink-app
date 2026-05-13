@@ -7,6 +7,10 @@
     <!-- Микрофон для голосового ввода -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
+    <!-- Галерея для аватарки -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+
     <!-- Распознавание речи -->
     <uses-permission android:name="android.permission.BIND_VOICE_INTERACTION"/>
     <queries>
