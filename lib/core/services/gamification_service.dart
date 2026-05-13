@@ -5,6 +5,7 @@ import '../gamification/level_system.dart';
 import '../storage/settings_keys.dart';
 import '../storage/storage_service.dart';
 import '../utils/date_utils.dart';
+import '../utils/haptics.dart';
 
 /// Сервис геймификации: XP, уровни, прогресс по дням, достижения.
 class GamificationService {
@@ -94,6 +95,7 @@ class GamificationService {
         );
         await StorageService.achievements.put(a.id, unlock.toJson());
         unlocked.add(a);
+        await ZinkHaptics.success();
       }
     }
 

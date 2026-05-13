@@ -7,6 +7,7 @@ import '../../core/providers.dart';
 import '../../core/services/gamification_service.dart';
 import '../../core/storage/storage_service.dart';
 import '../../core/theme/zink_spacing.dart';
+import '../../core/utils/haptics.dart';
 import '../../models/quiz.dart';
 import '../../widgets/zink_app_bar.dart';
 import '../../widgets/zink_button.dart';
@@ -41,10 +42,11 @@ class _QuizPlayScreenState extends ConsumerState<QuizPlayScreen> {
     final isCorrect = _selected == correct;
     if (isCorrect) {
       _correctCount++;
-      final gain = await GamificationService.addXp(
-        AppConfig.xpPerQuizCorrect,
-      );
+      final gain = await GamificationService.addXp(AppConfig.xpPerQuizCorrect);
       ref.read(totalXpProvider.notifier).state = gain.newTotal;
+      await ZinkHaptics.success();
+    } else {
+      await ZinkHaptics.error();
     }
     setState(() => _revealed = true);
   }

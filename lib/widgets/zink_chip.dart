@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/zink_spacing.dart';
+import '../core/utils/haptics.dart';
 
 class ZinkChip extends StatelessWidget {
   const ZinkChip({
@@ -22,7 +23,12 @@ class ZinkChip extends StatelessWidget {
     final scheme = theme.colorScheme;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: onTap == null
+          ? null
+          : () {
+              ZinkHaptics.selection();
+              onTap!();
+            },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/zink_spacing.dart';
+import '../core/utils/haptics.dart';
 
 enum ZinkButtonVariant { solid, outline, ghost }
 enum ZinkButtonSize { sm, md, lg }
@@ -93,7 +94,10 @@ class _ZinkButtonState extends State<ZinkButton> {
       onTapDown: disabled ? null : (_) => setState(() => _pressed = true),
       onTapUp: disabled ? null : (_) => setState(() => _pressed = false),
       onTapCancel: disabled ? null : () => setState(() => _pressed = false),
-      onTap: disabled ? null : () => widget.onPressed?.call(),
+      onTap: disabled ? null : () {
+        ZinkHaptics.light();
+        widget.onPressed?.call();
+      },
       child: AnimatedScale(
         scale: _pressed ? 0.97 : 1.0,
         duration: const Duration(milliseconds: 110),

@@ -82,6 +82,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             icon: const Icon(Icons.history_rounded),
             onPressed: () => context.go(RoutePaths.chatHistory),
           ),
+          if (state.session.messages.isNotEmpty && !state.streaming)
+            IconButton(
+              tooltip: 'Повторить ответ',
+              icon: const Icon(Icons.refresh_rounded),
+              onPressed: ctrl.regenerate,
+            ),
           IconButton(
             tooltip: 'Новый диалог',
             icon: const Icon(Icons.add_comment_outlined),

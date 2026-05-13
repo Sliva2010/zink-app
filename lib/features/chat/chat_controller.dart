@@ -6,9 +6,11 @@ import '../../core/config/app_config.dart';
 import '../../core/network/gigachat_client.dart';
 import '../../core/network/gigachat_exception.dart';
 import '../../core/providers.dart';
+import '../../core/services/connectivity_service.dart';
 import '../../core/services/gamification_service.dart';
 import '../../core/services/streak_service.dart';
 import '../../core/storage/storage_service.dart';
+import '../../core/utils/haptics.dart';
 import '../../models/chat_message.dart';
 import '../../models/chat_session.dart';
 import '../../models/user_profile.dart';
@@ -84,11 +86,18 @@ class ChatController extends StateNotifier<ChatState> {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
 
+    // Проверка сети
+    final online = await ConnectivityService.isOnline();
+    if (!online) {
+      state = state.copyWith(error: 'Нет подключения к интернету');
+      await ZinkHaptics.error();
+      return;
+    }
+
+    await ZinkHaptics.medium();
+
     final profile = _ref.read(userProfileProvider);
-    final userMsg = ChatMessage(
-      role: ChatRole.user,
-      content: trimmed,
-    );
+    final userMsg = ChatMessage(role: ChatRole.user, content: trimmed);
     final placeholder = ChatMessage(role: ChatRole.assistant, content: '');
 
     final updatedMessages = [...state.session.messages, userMsg, placeholder];
@@ -132,23 +141,47 @@ class ChatController extends StateNotifier<ChatState> {
         _updateAssistantContent(buffer.toString());
       }
     } on GigaChatException catch (e) {
-      // Стрим упал — попробуем не-стрим запрос как fallback
+      // Стрим упал — fallback на sync
       try {
         final fallback = await client.completion(messages: messagesForApi);
         buffer.write(fallback);
         _updateAssistantContent(buffer.toString());
       } catch (_) {
         _finishWithError(e.message);
+        await ZinkHaptics.error();
         return;
       }
     } catch (e) {
       _finishWithError(e.toString());
+      await ZinkHaptics.error();
       return;
     }
 
     state = state.copyWith(streaming: false);
     await _persistSession();
     await _awardXp();
+    await ZinkHaptics.light();
+  }
+
+  /// Регенерировать последний ответ ассистента.
+  Future<void> regenerate() async {
+    if (state.streaming) return;
+    final msgs = state.session.messages;
+    if (msgs.isEmpty) return;
+    // Убираем последний ответ ассистента
+    final withoutLast = msgs.last.role == ChatRole.assistant
+        ? msgs.sublist(0, msgs.length - 1)
+        : msgs;
+    if (withoutLast.isEmpty || withoutLast.last.role != ChatRole.user) return;
+    final lastUserText = withoutLast.last.content;
+    // Откатываем до состояния перед последним вопросом
+    state = state.copyWith(
+      session: state.session.copyWith(
+        messages: withoutLast.sublist(0, withoutLast.length - 1),
+      ),
+      clearError: true,
+    );
+    await sendMessage(lastUserText);
   }
 
   void _updateAssistantContent(String content) {
@@ -161,7 +194,6 @@ class ChatController extends StateNotifier<ChatState> {
   }
 
   void _finishWithError(String error) {
-    // Удалить пустой плейсхолдер ассистента
     final msgs = [...state.session.messages];
     if (msgs.isNotEmpty &&
         msgs.last.role == ChatRole.assistant &&

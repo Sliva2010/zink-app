@@ -84,11 +84,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         const SizedBox(height: ZinkSpacing.md),
                     itemBuilder: (context, i) {
                       final s = sessions[i];
-                      final firstUserMsg = s.messages.firstWhere(
-                        (m) => m.content.isNotEmpty,
-                        orElse: () =>
-                            s.messages.isEmpty ? s.messages.first : s.messages.first,
-                      );
+                      // Безопасно берём первое непустое сообщение
+                      final preview = s.messages
+                          .where((m) => m.content.isNotEmpty)
+                          .map((m) => m.content)
+                          .firstOrNull ?? '';
                       return ZinkEntrance(
                         delay: Duration(milliseconds: 30 * i),
                         child: ZinkCard(
@@ -102,7 +102,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                   overflow: TextOverflow.ellipsis),
                               const SizedBox(height: 6),
                               Text(
-                                firstUserMsg.content,
+                                preview,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurface
                                       .withValues(alpha: 0.7),
