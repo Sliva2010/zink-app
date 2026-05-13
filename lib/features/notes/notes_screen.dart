@@ -33,7 +33,26 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   }
 
   void _deleteNote(String id) async {
-    await StorageService.notes.delete(id);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Удалить конспект?'),
+        content: const Text('Это действие нельзя отменить.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Удалить'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await StorageService.notes.delete(id);
+    }
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/animations/zink_animations.dart';
 import '../../core/router/route_paths.dart';
@@ -23,6 +24,41 @@ class HistoryScreen extends ConsumerStatefulWidget {
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   String _query = '';
+
+  void _shareSession(ChatSession s) {
+    final buf = StringBuffer();
+    buf.writeln('Диалог: ${s.title}');
+    buf.writeln('─' * 30);
+    for (final m in s.messages) {
+      final who = m.role.name == 'user' ? 'Я' : 'ZINK';
+      buf.writeln('$who: ${m.content}');
+      buf.writeln();
+    }
+    Share.share(buf.toString(), subject: s.title);
+  }
+
+  void _deleteSession(String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Удалить диалог?'),
+        content: const Text('Это действие нельзя отменить.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Удалить'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await StorageService.chats.delete(id);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,12 +170,43 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                           .withValues(alpha: 0.5),
                                     ),
                                   ),
-                                  Text(
-                                    '${s.messages.length} сообщ.',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.5),
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '${s.messages.length} сообщ.',
+                                        style: theme.textTheme.labelSmall?.copyWith(
+                                          color: theme.colorScheme.onSurface
+                                              .withValues(alpha: 0.5),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      InkWell(
+                                        onTap: () => _shareSession(s),
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4),
+                                          child: Icon(
+                                            Icons.share_outlined,
+                                            size: 14,
+                                            color: theme.colorScheme.onSurface
+                                                .withValues(alpha: 0.5),
+                                          ),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () => _deleteSession(s.id),
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4),
+                                          child: Icon(
+                                            Icons.delete_outline,
+                                            size: 14,
+                                            color: theme.colorScheme.onSurface
+                                                .withValues(alpha: 0.5),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

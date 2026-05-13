@@ -105,7 +105,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
             Expanded(
               child: state.session.messages.isEmpty
-                  ? const _EmptyState()
+                  ? _EmptyState(onSend: ctrl.sendMessage)
                   : ListView.builder(
                       controller: _scrollCtrl,
                       physics: const BouncingScrollPhysics(),
@@ -152,24 +152,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({this.onSend});
+
+  final void Function(String)? onSend;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final examples = [
       'Объясни теорему Пифагора простыми словами',
-      'Расскажи о Великой Отечественной войне',
-      r'Помоги решить уравнение $2x^2 - 4x + 1 = 0$',
+      'Расскажи о Великой Отечественной войне кратко',
       'Что такое генетика? Кратко',
       'Сравни клетки растений и животных',
+      'Помоги составить план подготовки к экзамену',
     ];
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(ZinkSpacing.xl),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: ZinkSpacing.xl),
           Icon(
             Icons.chat_bubble_outline_rounded,
             size: 56,
@@ -189,7 +192,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: ZinkSpacing.xl),
           Text(
-            'Примеры:',
+            'Попробуй спросить:',
             style: theme.textTheme.labelMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
@@ -197,8 +200,35 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: ZinkSpacing.sm),
           for (final e in examples)
             Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text('• $e', style: theme.textTheme.bodyMedium),
+              padding: const EdgeInsets.only(bottom: ZinkSpacing.sm),
+              child: GestureDetector(
+                onTap: () => onSend?.call(e),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: ZinkSpacing.md,
+                    vertical: ZinkSpacing.sm + 2,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: theme.colorScheme.outline,
+                    ),
+                    borderRadius: BorderRadius.circular(ZinkSpacing.radiusMd),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(e, style: theme.textTheme.bodyMedium),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 16,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
         ],
       ),

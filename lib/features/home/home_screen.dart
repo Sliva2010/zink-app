@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../core/animations/zink_animations.dart';
 import '../../core/gamification/level_system.dart';
@@ -9,6 +10,8 @@ import '../../core/router/route_paths.dart';
 import '../../core/services/gamification_service.dart';
 import '../../core/services/streak_service.dart';
 import '../../core/theme/zink_spacing.dart';
+import '../../core/storage/storage_service.dart';
+import '../../models/flash_card.dart';
 import '../../widgets/zink_card.dart';
 import '../../widgets/zink_scaffold.dart';
 import 'widgets/level_badge.dart';
@@ -27,6 +30,12 @@ class HomeScreen extends ConsumerWidget {
     final level = LevelSystem.levelForXp(xp);
     final today = GamificationService.today();
     final streak = StreakService.current;
+    // Карточки к повторению
+    final dueCards = StorageService.cards.values
+        .whereType<Map>()
+        .map(FlashCard.fromJson)
+        .where((c) => c.isDue)
+        .length;
 
     return ZinkScaffold(
       body: SingleChildScrollView(
@@ -100,8 +109,55 @@ class HomeScreen extends ConsumerWidget {
             ),
 
             const SizedBox(height: ZinkSpacing.xl),
-            Text('Быстрые действия', style: theme.textTheme.titleLarge),
-            const SizedBox(height: ZinkSpacing.md),
+            if (dueCards > 0) ...[
+              ZinkEntrance(
+                delay: const Duration(milliseconds: 160),
+                child: ZinkCard(
+                  onTap: () => context.go(RoutePaths.cardsReview),
+                  padding: const EdgeInsets.all(ZinkSpacing.lg),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.onSurface,
+                          borderRadius: BorderRadius.circular(ZinkSpacing.radiusSm),
+                        ),
+                        child: Icon(
+                          Icons.style_rounded,
+                          color: theme.colorScheme.onPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: ZinkSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Карточки ждут повторения',
+                              style: theme.textTheme.titleSmall,
+                            ),
+                            Text(
+                              '$dueCards ${_cardWord(dueCards)} к повторению',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: ZinkSpacing.md),
+            ],
+            Text('Быстрые действия', style: theme.textTheme.titleLarge),            const SizedBox(height: ZinkSpacing.md),
 
             ZinkEntrance(
               delay: const Duration(milliseconds: 180),
@@ -202,6 +258,14 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _cardWord(int n) {
+    final mod10 = n % 10;
+    final mod100 = n % 100;
+    if (mod10 == 1 && mod100 != 11) return 'карточка';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'карточки';
+    return 'карточек';
   }
 
   String _greeting() {

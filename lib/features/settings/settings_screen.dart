@@ -81,6 +81,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 .withValues(alpha: 0.6),
                           ),
                         ),
+                      if (profile != null && profile.preferredSubjects.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            profile.preferredSubjects.take(3).join(', ') +
+                                (profile.preferredSubjects.length > 3 ? '...' : ''),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -122,6 +136,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Кеш очищен')),
               );
+            },
+          ),
+          const SizedBox(height: ZinkSpacing.sm),
+          _SettingsTile(
+            icon: Icons.delete_sweep_outlined,
+            title: 'Очистить историю чатов',
+            subtitle: 'Удалить все диалоги',
+            onTap: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Удалить все чаты?'),
+                  content: const Text('Все диалоги будут удалены без возможности восстановления.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: const Text('Отмена'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: const Text('Удалить'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true) {
+                await StorageService.chats.clear();
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('История чатов очищена')),
+                );
+              }
             },
           ),
           const SizedBox(height: ZinkSpacing.sm),
