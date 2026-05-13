@@ -40,6 +40,16 @@ jobs:
       - name: Show Flutter info
         run: flutter --version
 
+      - name: Set app launcher icon from avatarka.png
+        run: |
+          for dir in android/app/src/main/res/mipmap-mdpi \
+                     android/app/src/main/res/mipmap-hdpi \
+                     android/app/src/main/res/mipmap-xhdpi \
+                     android/app/src/main/res/mipmap-xxhdpi \
+                     android/app/src/main/res/mipmap-xxxhdpi; do
+            cp assets/avatarka.png "$dir/ic_launcher.png"
+          done
+
       - name: Get dependencies
         run: flutter pub get
 

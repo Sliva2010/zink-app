@@ -72,7 +72,6 @@ flutter:
   assets:
     - assets/certificates/
     - assets/fonts/
-    - assets/avatarka.png
 
   fonts:
     - family: ZinkDisplay

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// Брендовый логотип ZINK — использует avatarka.png из assets.
+import '../core/theme/zink_typography.dart';
+
+/// Брендовый логотип-вордмарк ZINK.
 class ZinkLogo extends StatelessWidget {
   const ZinkLogo({super.key, this.size = 48, this.color});
 
@@ -9,11 +11,13 @@ class ZinkLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/avatarka.png',
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
+    final theme = Theme.of(context);
+    return Text(
+      'ZINK',
+      style: ZinkTypography.brandWordmark.copyWith(
+        fontSize: size,
+        color: color ?? theme.colorScheme.onSurface,
+      ),
     );
   }
 }
