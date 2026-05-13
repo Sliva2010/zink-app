@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../core/animations/zink_animations.dart';
+import '../../core/router/route_paths.dart';
 import '../../core/storage/storage_service.dart';
 import '../../core/theme/zink_spacing.dart';
 import '../../core/utils/date_utils.dart';
@@ -27,7 +28,19 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ZinkScaffold(
-      appBar: const ZinkAppBar(title: 'История'),
+      appBar: ZinkAppBar(
+        title: 'История',
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              context.go(RoutePaths.home);
+            }
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: ZinkSpacing.lg),
         child: Column(

@@ -76,8 +76,11 @@ class MathText extends StatelessWidget {
 
   /// Разбиение на display и обычные сегменты.
   List<_Block> _splitDisplay(String src) {
+    // Сначала убираем markdown-разметку вне LaTeX-блоков
+    final cleaned = _stripMarkdown(src);
+
     // \[ \] -> $$...$$
-    final normalized = src
+    final normalized = cleaned
         .replaceAll(r'\[', r'$$')
         .replaceAll(r'\]', r'$$')
         .replaceAll(r'\(', r'$')
@@ -133,6 +136,50 @@ class MathText extends StatelessWidget {
       spans.add(TextSpan(text: src));
     }
     return spans;
+  }
+  /// Убирает markdown-разметку из текста, сохраняя LaTeX-блоки нетронутыми.
+  ///
+  /// Удаляет: **bold**, *italic*, __bold__, _italic_, ### заголовки,
+  /// `code`, ~~strikethrough~~, > цитаты.
+  String _stripMarkdown(String src) {
+    // Защищаем LaTeX-блоки: временно заменяем их плейсхолдерами
+    final latexBlocks = <String>[];
+    String s = src;
+
+    // Защита display LaTeX $$...$$
+    s = s.replaceAllMapped(RegExp(r'\$\$([\s\S]+?)\$\$', multiLine: true), (m) {
+      latexBlocks.add(m.group(0)!);
+      return '\x00LATEX${latexBlocks.length - 1}\x00';
+    });
+    // Защита inline LaTeX $...$
+    s = s.replaceAllMapped(RegExp(r'\$([^\$\n]+?)\$'), (m) {
+      latexBlocks.add(m.group(0)!);
+      return '\x00LATEX${latexBlocks.length - 1}\x00';
+    });
+
+    // Убираем заголовки ### ## #
+    s = s.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
+    // Убираем **bold** и __bold__
+    s = s.replaceAll(RegExp(r'\*\*(.+?)\*\*'), r'$1');
+    s = s.replaceAll(RegExp(r'__(.+?)__'), r'$1');
+    // Убираем *italic* и _italic_
+    s = s.replaceAll(RegExp(r'\*(.+?)\*'), r'$1');
+    s = s.replaceAll(RegExp(r'_(.+?)_'), r'$1');
+    // Убираем ~~strikethrough~~
+    s = s.replaceAll(RegExp(r'~~(.+?)~~'), r'$1');
+    // Убираем `code`
+    s = s.replaceAll(RegExp(r'`(.+?)`'), r'$1');
+    // Убираем > цитаты
+    s = s.replaceAll(RegExp(r'^>\s?', multiLine: true), '');
+    // Убираем горизонтальные линии --- или ***
+    s = s.replaceAll(RegExp(r'^[-*]{3,}\s*$', multiLine: true), '');
+
+    // Восстанавливаем LaTeX-блоки
+    for (var i = 0; i < latexBlocks.length; i++) {
+      s = s.replaceAll('\x00LATEX$i\x00', latexBlocks[i]);
+    }
+
+    return s;
   }
 }
 

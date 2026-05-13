@@ -15,7 +15,7 @@ class ZinkApp extends ConsumerWidget {
     final inverse = ref.watch(inverseModeProvider);
 
     return MaterialApp.router(
-      title: 'ZINK',
+      title: 'Твой ИИ репетитор-ZINK',
       debugShowCheckedModeBanner: false,
       routerConfig: router,
       theme: ZinkTheme.light(),
